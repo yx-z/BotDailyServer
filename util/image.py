@@ -1,9 +1,13 @@
+from typing import Tuple
+
 import pyimgur as pyimgur
 from PIL import Image
 from PIL import ImageDraw, ImageFilter, ImageChops, ImageFont
 
-from util.const import Coordinate, Color
-from util.misc import get_resource_path
+from util.io import get_resource_path
+
+Color = Tuple[int, int, int]
+Coordinate = Tuple[int, int]
 
 
 def draw_text(

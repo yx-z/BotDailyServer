@@ -8,5 +8,5 @@ class Subject(BaseComponent):
     def get_content(self, **kwargs) -> str:
         content = self.template
         for template, actual in kwargs.items():
-            content = content.replace("{" + template + "}", actual)
+            content = content.replace("{" + template + "}", str(actual))
         return content
