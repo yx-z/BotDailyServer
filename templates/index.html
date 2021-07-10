@@ -1,14 +1,16 @@
 {% extends "base_page.html" %}
 {% block content %}
     <div>
-        <p>{{ message }}</p>
+        <form method="post" action="{{ url_for('add_email_template') }}">
+            <div>Add EmailTemplate <input type="submit" value="Submit"></div>
+            <textarea name="email_template" rows="10" cols="100"></textarea>
+        </form>
+    </div>
 
-        <p>{{ contacts }}</p>
-        <p>My Contacts:</p>
-        <ul>
-            {% for contact in contacts %}
-                <li>{{ contact }}</li>
-            {% endfor %}
-        </ul>
-</div>
+    Stored:
+    <div>
+        {% for template in templates %}
+            <div>{{ template }}</div>
+        {% endfor %}
+    </div>
 {% endblock %}

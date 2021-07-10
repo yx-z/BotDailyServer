@@ -5,7 +5,7 @@ from typing import List, Tuple, Optional, Set, Union
 from bd.component.base_component import BaseComponent
 from bd.component.templated_text import Subject
 from util.io import interrupt_after
-from util.send_email import Sender
+from util.mail import Sender
 
 
 class EmailTemplate:
@@ -27,6 +27,7 @@ class EmailTemplate:
         retries: int = 0,
         retry_delay_seconds: int = 0,
         timeout_seconds: int = 0,
+        to_str_func_on_error=None,
         **kwargs,
     ) -> Tuple[str, List[str]]:
         attrs = list(filter(lambda s: not s.startswith("__"), dir(self)))
@@ -46,8 +47,8 @@ class EmailTemplate:
                     components.append(component.get_div_str(**arg_dict))
                 except Exception as e:
                     logging.info(f"Got Exception {exception}")
-                    if "to_str_func_on_error" in kwargs:
-                        components.append(kwargs["to_str_func_on_error"]())
+                    if to_str_func_on_error is not None:
+                        components.append(to_str_func_on_error())
                     else:
                         raise e
             return subject, components

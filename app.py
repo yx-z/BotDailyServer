@@ -1,14 +1,23 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
-FLASK_APP = Flask(__name__)
+app = Flask(__name__)
 PORT = 8000
 DEBUG = True
 
+TEMPLATES = []
 
-@FLASK_APP.route("/")
+
+@app.route("/")
 def home_page():
-    return render_template("index.html", message="Hello", contacts=["a", "b"])
+    return render_template("index.html", templates=TEMPLATES)
+
+
+@app.route("/add_email_template", methods=["POST"])
+def add_email_template():
+    t = request.form["email_template"]
+    TEMPLATES.append(t)
+    return home_page()
 
 
 if __name__ == "__main__":
-    FLASK_APP.run(port=PORT, debug=DEBUG)
+    app.run(port=PORT, debug=DEBUG)
