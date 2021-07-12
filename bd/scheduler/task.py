@@ -2,7 +2,7 @@ import threading
 from typing import Tuple
 
 from bd.mail.email_template import EmailTemplate
-from util.io import exception_as_str
+from util.system import exception_as_str
 from util.web import HTML_NEW_LINE
 
 

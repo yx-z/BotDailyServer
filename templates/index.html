@@ -1,27 +1,39 @@
 {% extends "base_page.html" %}
 {% block content %}
-    <div>
-        <form method="post" action="{{ url_for('add_email_template') }}">
-            <div>Send BotDaily every day at HH:MM
-                <input type="text" name="time">
-                <input type="submit" value="Add"></div>
-            <textarea name="email_template" rows="10" cols="75"></textarea>
-        </form>
-    </div>
+    <div class="row">
+        <div>
+            <div class="column">
+                <form method="post"
+                      action="{{ url_for('add_email_template') }}">
+                    <div>Send BotDaily every day at HH:MM
+                        <input type="text" name="time">
+                        <input type="submit" value="Add"></div>
+                    <textarea name="email_template" rows="10"
+                              cols="75"></textarea>
+                </form>
+            </div>
 
-    Stored:
-    <div>
-        {% for uid, time_and_template in templates.items() %}
-            <form method="post" action="{{ url_for('remove_email_template') }}">
-                <div>
-                    <input type="text" name="time"
-                           value="{{ time_and_template[0] }}">
-                    <input type="submit" value="Delete/Modify">
-                    <input type="hidden" name="uid" value="{{ uid }}">
-                </div>
-                <textarea name="email_template" rows="10"
-                          cols="75">{{ time_and_template[1] }}</textarea>
-            </form>
-        {% endfor %}
+            Stored:
+            <div>
+                {% for obj in templates %}
+                    <form method="post"
+                          action="{{ url_for('modify_email_template') }}">
+                        <div>
+                            <input type="text" name="_id"
+                                   value="{{ obj['_id'] }}" readonly>
+                            <input type="text" name="time"
+                                   value="{{ obj['time'] }}">
+                            <input type="submit" value="Delete/Modify">
+                        </div>
+                        <textarea name="email_template" rows="10"
+                                  cols="75">{{ obj['email_template'] }}</textarea>
+                    </form>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="font-size: 5px;">
+            {{ log }}
+        </div>
     </div>
 {% endblock %}

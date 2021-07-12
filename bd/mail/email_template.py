@@ -4,7 +4,7 @@ from typing import List, Tuple, Optional, Set, Union
 
 from bd.component.base_component import BaseComponent
 from bd.component.templated_text import Subject
-from util.io import interrupt_after
+from util.system import interrupt_after
 from util.mail import Sender
 
 

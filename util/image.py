@@ -4,7 +4,7 @@ from typing import Tuple
 from PIL import Image
 from PIL import ImageDraw, ImageFilter, ImageChops, ImageFont
 
-from util.io import get_resource_path
+from util.system import get_resource_path
 
 Color = Tuple[int, int, int]
 Coordinate = Tuple[int, int]

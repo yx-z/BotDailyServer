@@ -4,6 +4,7 @@ import os
 import sys
 import threading
 import traceback
+from pathlib import Path
 
 
 def get_resource_path(*sub_path_to_file: str) -> str:
@@ -42,3 +43,27 @@ def interrupt_after(seconds: int):
 
 def exception_as_str(exception: Exception) -> str:
     return f"Exception: {exception}\nTraceback: {traceback.format_exc()}"
+
+
+def create_log(log_path: str):
+    if not os.path.exists(log_path):
+        Path.mkdir(Path(os.path.dirname(log_path)), exist_ok=True, parents=True)
+        with open(log_path, "w"):
+            pass
+
+
+def setup_log(log_path: str):
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)-10s %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+        handlers=[logging.FileHandler(log_path), logging.StreamHandler()],
+    )
+
+
+def get_log(log_path: str, reverse: bool = False) -> str:
+    with open(log_path) as f:
+        log = f.readlines()
+        if reverse:
+            log.reverse()
+    return "\n".join(log)

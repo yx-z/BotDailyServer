@@ -11,7 +11,7 @@ from util.image import (
     Color,
     Coordinate,
 )
-from util.io import resource_exists
+from util.system import resource_exists
 from util.web import CSS_FULL_WIDTH, dict_to_css
 
 
