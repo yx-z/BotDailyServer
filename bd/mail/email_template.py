@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import List, Tuple, Optional, Set, Union
+from typing import List, Tuple, Optional, Set, Union, Callable
 
 from bd.component.base_component import BaseComponent
 from bd.component.templated_text import Subject
@@ -24,10 +24,10 @@ class EmailTemplate:
     def instantiate(
         self,
         *,
-        retries: int = 0,
+        num_retry: int = 0,
         retry_delay_seconds: int = 0,
         timeout_seconds: int = 0,
-        to_str_func_on_error=None,
+        to_str_func_on_error: Optional[Callable[[Exception], str]] = None,
         **kwargs,
     ) -> Tuple[str, List[str]]:
         attrs = list(filter(lambda s: not s.startswith("__"), dir(self)))
@@ -48,7 +48,7 @@ class EmailTemplate:
                 except Exception as e:
                     logging.info(f"Got Exception {exception}")
                     if to_str_func_on_error is not None:
-                        components.append(to_str_func_on_error())
+                        components.append(to_str_func_on_error(e))
                     else:
                         raise e
             return subject, components
@@ -56,16 +56,16 @@ class EmailTemplate:
         try:
             return _instantiate()
         except Exception as exception:
-            if retries > 0:
-                retries -= 1
+            if num_retry > 0:
+                num_retry -= 1
                 logging.warning(
-                    f"Will do {retries} retries after {timeout_seconds} seconds"
+                    f"Will do {num_retry} retries after {timeout_seconds} seconds"
                 )
                 time.sleep(retry_delay_seconds)
                 self.instantiate(
-                    retries=retries,
+                    num_retry=num_retry,
                     timeout_seconds=timeout_seconds,
-                    retry_delay_seconds=retries,
+                    retry_delay_seconds=retry_delay_seconds,
                     **kwargs,
                 )
             else:

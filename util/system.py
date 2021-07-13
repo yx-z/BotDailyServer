@@ -3,8 +3,12 @@ import logging
 import os
 import sys
 import threading
+import time
 import traceback
+from datetime import datetime, timedelta
+from math import ceil
 from pathlib import Path
+from typing import Callable
 
 
 def get_resource_path(*sub_path_to_file: str) -> str:
@@ -15,6 +19,14 @@ def get_resource_path(*sub_path_to_file: str) -> str:
 
 def resource_exists(*sub_path_to_file: str) -> bool:
     return os.path.exists(get_resource_path(*sub_path_to_file))
+
+
+def threaded(job_func: Callable):
+    def job(*args, **kwargs):
+        job_thread = threading.Thread(target=job_func, args=args, kwargs=kwargs)
+        job_thread.start()
+
+    return job
 
 
 def interrupt_after(seconds: int):
@@ -61,9 +73,16 @@ def setup_log(log_path: str):
     )
 
 
-def get_log(log_path: str, reverse: bool = False) -> str:
+def get_log(log_path: str, last_n_lines: int = 10) -> str:
     with open(log_path) as f:
         log = f.readlines()
-        if reverse:
-            log.reverse()
-    return "\n".join(log)
+    return "\n".join(log[len(log) - last_n_lines :])
+
+
+def sleep_until_next_minute():
+    now = datetime.now()
+    next_minute = datetime(
+        now.year, now.month, now.day, now.hour, now.minute
+    ) + timedelta(minutes=1)
+    sleep_time = max(0, ceil((next_minute - datetime.now()).total_seconds()))
+    time.sleep(sleep_time)

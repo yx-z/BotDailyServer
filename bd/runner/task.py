@@ -1,20 +1,12 @@
-import threading
 from typing import Tuple
 
 from bd.mail.email_template import EmailTemplate
-from util.system import exception_as_str
+from util.mail import Sender
+from util.system import exception_as_str, threaded
 from util.web import HTML_NEW_LINE
 
 
-def threaded(job_func):
-    def job(*args, **kwargs):
-        job_thread = threading.Thread(target=job_func, args=args, kwargs=kwargs)
-        job_thread.start()
-
-    return job
-
-
-def instantiate_email_template(
+def instantiate_email_template_str(
     email_template: EmailTemplate,
     *,
     retries: int = 0,
@@ -24,7 +16,7 @@ def instantiate_email_template(
 ) -> Tuple[bool, str, str]:
     try:
         subject, body = email_template.instantiate(
-            retries=retries,
+            num_retry=retries,
             retry_delay_seconds=retry_delay_seconds,
             timeout_seconds=timeout_seconds,
             **kwargs,
@@ -40,6 +32,7 @@ def instantiate_email_template(
 
 @threaded
 def send_email(
+    sender: Sender,
     email_template: EmailTemplate,
     *,
     retries: int = 0,
@@ -47,17 +40,15 @@ def send_email(
     timeout_seconds: int = 0,
     **kwargs,
 ):
-    is_success, subject, body = instantiate_email_template(
+    email_template.sender = sender
+    is_success, subject, body = instantiate_email_template_str(
         email_template,
         retries=retries,
         retry_delay_seconds=retry_delay_seconds,
         timeout_seconds=timeout_seconds,
         **kwargs,
     )
-    sender = email_template.sender
     if is_success:
         sender.send(email_template.recipient_emails, subject, body)
     else:
-        if sender is None:
-            raise Exception(f"Require not None sender")
         sender.send(sender.email_address, subject, body)
