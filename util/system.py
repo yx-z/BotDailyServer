@@ -3,10 +3,7 @@ import logging
 import os
 import sys
 import threading
-import time
 import traceback
-from datetime import datetime, timedelta
-from math import ceil
 from pathlib import Path
 from typing import Callable
 
@@ -71,10 +68,10 @@ def setup_log(log_path: str):
     )
 
 
-def get_log(log_path: str, last_n_lines: int = 100) -> str:
+def get_log(log_path: str) -> str:
     with open(log_path) as f:
         log = f.readlines()
-    return "\n".join(log[len(log) - last_n_lines :])
+    return "\n".join(log)
 
 
 def get_config() -> str:
@@ -85,12 +82,3 @@ def get_config() -> str:
 def set_config(config_str: str):
     with open("config.py", "w") as f:
         f.write(config_str)
-
-
-def sleep_until_next_minute():
-    now = datetime.now()
-    next_minute = datetime(
-        now.year, now.month, now.day, now.hour, now.minute
-    ) + timedelta(minutes=1)
-    sleep_time = max(0, ceil((next_minute - datetime.now()).total_seconds()))
-    time.sleep(sleep_time)

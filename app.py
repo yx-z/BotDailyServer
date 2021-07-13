@@ -56,7 +56,5 @@ def modify_email_template() -> Response:
 
 if __name__ == "__main__":
     setup_log(LOG_FILE)
-
-    schedule_every_minute(DB)
-
+    schedule_every_minute()
     FLASK.run(debug=True)
