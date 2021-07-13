@@ -57,14 +57,12 @@ def exception_as_str(exception: Exception) -> str:
     return f"Exception: {exception}\nTraceback: {traceback.format_exc()}"
 
 
-def create_log(log_path: str):
+def setup_log(log_path: str):
     if not os.path.exists(log_path):
         Path.mkdir(Path(os.path.dirname(log_path)), exist_ok=True, parents=True)
         with open(log_path, "w"):
             pass
 
-
-def setup_log(log_path: str):
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)-10s %(message)s",
@@ -73,10 +71,20 @@ def setup_log(log_path: str):
     )
 
 
-def get_log(log_path: str, last_n_lines: int = 10) -> str:
+def get_log(log_path: str, last_n_lines: int = 100) -> str:
     with open(log_path) as f:
         log = f.readlines()
     return "\n".join(log[len(log) - last_n_lines :])
+
+
+def get_config() -> str:
+    with open("config.py") as f:
+        return f.read()
+
+
+def set_config(config_str: str):
+    with open("config.py", "w") as f:
+        f.write(config_str)
 
 
 def sleep_until_next_minute():
