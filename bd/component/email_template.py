@@ -22,12 +22,12 @@ class EmailTemplate:
         self.components = components
 
     def instantiate(
-            self,
-            *,
-            num_retry: int = 0,
-            retry_delay_seconds: int = 0,
-            timeout_seconds: int = 0,
-            **kwargs,
+        self,
+        *,
+        num_retry,
+        retry_delay_seconds,
+        timeout_seconds,
+        **kwargs,
     ) -> Tuple[bool, str, List[str]]:
         attrs = list(filter(lambda s: not s.startswith("__"), dir(self)))
         if any(a is None for a in attrs):
@@ -50,8 +50,7 @@ class EmailTemplate:
                     logging.error(e)
                     components.append(exception_as_str(e))
             subject = (
-                components[
-                    0] if is_subject_success else "Error instantiating subject"
+                components[0] if is_subject_success else "Error instantiating subject"
             )
             return is_success, subject, components[1:]
 

@@ -9,15 +9,15 @@ def send_email(
     sender: Sender,
     email_template: EmailTemplate,
     *,
-    retries: int = 0,
-    retry_delay_seconds: int = 0,
-    timeout_seconds: int = 0,
+    num_retry: int,
+    retry_delay_seconds: int,
+    timeout_seconds: int,
     **kwargs,
 ):
     email_template.sender = sender
 
     is_success, subject, body = email_template.instantiate(
-        retries=retries,
+        num_retry=num_retry,
         retry_delay_seconds=retry_delay_seconds,
         timeout_seconds=timeout_seconds,
         **kwargs,
