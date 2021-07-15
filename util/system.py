@@ -5,7 +5,7 @@ import sys
 import threading
 import traceback
 from pathlib import Path
-from typing import Callable, Dict
+from typing import Callable, Dict, List
 
 
 def get_resource_path(*sub_path_to_file: str) -> str:
@@ -68,10 +68,9 @@ def setup_log(log_path: str):
     )
 
 
-def get_log(log_path: str) -> str:
+def get_log(log_path: str) -> List[str]:
     with open(log_path) as f:
-        log = f.readlines()
-    return "\n".join(log)
+        return f.readlines()
 
 
 def get_config_str() -> str:

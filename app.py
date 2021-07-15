@@ -3,7 +3,7 @@ import datetime
 import logging
 import os
 
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, request
 
 from bd.email_template import EmailTemplate
 from bd.runner import schedule_every_minute
@@ -16,19 +16,22 @@ from util.system import (
     get_config,
     exception_as_str,
 )
-from util.web import get_form_value, home
+from util.web import get_form_value, home, HTML_NEW_LINE
 
 FLASK = Flask(__name__)
 LOG_FILE = os.path.join("log", f"{datetime.datetime.today().strftime('%Y%m%d')}.log")
 DB = get_db()
 
 
-@FLASK.route("/")
+@FLASK.route("/", methods=["POST", "GET"])
 def home_page() -> str:
+    log = get_log(LOG_FILE)
+    if "reverse" in request.form:
+        log = reversed(log)
     return render_template(
         "index.html",
         templates=DB.find(),
-        log=get_log(LOG_FILE),
+        log=HTML_NEW_LINE.join(log),
         config=get_config_str(),
     )
 
