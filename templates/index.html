@@ -11,10 +11,12 @@
                 </form>
 
                 <form method="post"
-                      action="{{ url_for('add_email_template') }}">
-                    <div>Send BotDaily every day at HH:MM
+                      action="{{ url_for('operate_email_template') }}">
+                    <div>Send email daily at HH:MM
                         <input type="text" name="time">
-                        <input type="submit" value="Add"></div>
+                        <input type="submit" name="action" value="Add">
+                        <input type="submit" name="action" value="Clear All">
+                    </div>
                     <textarea name="email_template" rows="10"
                               cols="75"></textarea>
                 </form>
@@ -23,13 +25,16 @@
                 <div>
                     {% for obj in templates %}
                         <form method="post"
-                              action="{{ url_for('modify_email_template') }}">
+                              action="{{ url_for('access_email_template') }}">
                             <div>
                                 <input type="text" name="_id"
                                        value="{{ obj['_id'] }}" readonly>
                                 <input type="text" name="time"
                                        value="{{ obj['time'] }}">
-                                <input type="submit" value="Delete/Modify">
+                                <input type="submit" name="action"
+                                       value="Delete/Modify">
+                                <input type="submit" name="action"
+                                       value="Also Instantiate">
                             </div>
                             <textarea name="email_template" rows="10"
                                       cols="75">{{ obj['email_template'] }}</textarea>
@@ -42,10 +47,6 @@
                 {{ log }}
             </div>
         </div>
-
-    </div>
-
-    <div class="row">
 
     </div>
 {% endblock %}

@@ -6,6 +6,7 @@ from bd.component.base_component import BaseComponent
 from bd.component.templated_text import Subject
 from util.mail import Sender
 from util.system import interrupt_after, exception_as_str
+from util.web import HTML_NEW_LINE
 
 
 class EmailTemplate:
@@ -13,8 +14,8 @@ class EmailTemplate:
         self,
         subject: Optional[Subject] = None,
         components: Optional[List[BaseComponent]] = None,
-        sender: Optional[Sender] = None,
         recipient_emails: Optional[Union[Set[str], str]] = None,
+        sender: Optional[Sender] = None,
     ):
         self.subject = subject
         self.sender = sender
@@ -28,7 +29,7 @@ class EmailTemplate:
         retry_delay_seconds,
         timeout_seconds,
         **kwargs,
-    ) -> Tuple[bool, str, List[str]]:
+    ) -> Tuple[bool, str, str]:
         attrs = list(filter(lambda s: not s.startswith("__"), dir(self)))
         if any(a is None for a in attrs):
             raise Exception(f"Require not None {attrs}")
@@ -52,7 +53,7 @@ class EmailTemplate:
             subject = (
                 components[0] if is_subject_success else "Error instantiating subject"
             )
-            return is_success, subject, components[1:]
+            return is_success, subject, HTML_NEW_LINE.join(components[1:])
 
         try:
             return _instantiate()

@@ -5,7 +5,7 @@ import sys
 import threading
 import traceback
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Dict
 
 
 def get_resource_path(*sub_path_to_file: str) -> str:
@@ -74,9 +74,15 @@ def get_log(log_path: str) -> str:
     return "\n".join(log)
 
 
-def get_config() -> str:
+def get_config_str() -> str:
     with open("config.py") as f:
         return f.read()
+
+
+def get_config() -> Dict:
+    import config
+
+    return dict(filter(lambda p: not p[0].startswith("__"), vars(config).items()))
 
 
 def set_config(config_str: str):

@@ -8,6 +8,8 @@ HTML_NEW_LINE = "<br>"
 
 
 def get_form_value(value_names: Union[str, List[str]]) -> Union[Any, List[Any]]:
+    if isinstance(value_names, str):
+        value_names = [value_names]
     results = list(map(request.form.get, value_names))
     if len(results) == 1:
         return results[0]

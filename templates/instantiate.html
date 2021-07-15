@@ -1,0 +1,10 @@
+{% extends "base_page.html" %}
+{% block content %}
+    <a href="/">HOME</a>
+    <div>Scheduled Time: {{ time }}</div>
+    <div>Raw Template: {{ template_str }}</div>
+    <div>Is Success: {{ is_success }}</div>
+    <div>Subject: {{ subject }}</div>
+    <div>Body:</div>
+    {{ body|safe }}
+{% endblock %}
