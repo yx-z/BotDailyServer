@@ -19,7 +19,9 @@ from util.system import (
 from util.web import get_form_value, home, HTML_NEW_LINE
 
 FLASK = Flask(__name__)
-LOG_FILE = os.path.join("log", f"{datetime.datetime.today().strftime('%Y%m%d')}.log")
+PORT = 8080
+LOG_FILE = os.path.join("log",
+                        f"{datetime.datetime.today().strftime('%Y%m%d')}.log")
 DB = get_db()
 
 
@@ -75,8 +77,10 @@ def access_email_template() -> Response:
         try:
             config_args = get_config()
             template: EmailTemplate = eval(modified_template)
+            template.sender = config_args["SENDER"]
             is_success, subject, body = template.instantiate(
-                num_retry=0, retry_delay_seconds=0, timeout_seconds=60, **config_args
+                num_retry=0, retry_delay_seconds=0, timeout_seconds=60,
+                **config_args
             )
             return render_template(
                 "instantiate.html",
@@ -96,4 +100,4 @@ def access_email_template() -> Response:
 if __name__ == "__main__":
     setup_log(LOG_FILE)
     schedule_every_minute()
-    FLASK.run()
+    FLASK.run(host="localhost", port=PORT)

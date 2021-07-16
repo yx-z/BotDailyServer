@@ -14,9 +14,7 @@ class TemplatedText(BaseComponent):
         else:
             content = self.template
 
-        for placeholder, actual in kwargs.items():
-            content = content.replace("{" + placeholder + "}", str(actual))
-        return content
+        return content.format(**kwargs)
 
 
 class Subject(TemplatedText):
