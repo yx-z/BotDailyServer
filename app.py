@@ -1,22 +1,20 @@
 import datetime
 import logging
-from typing import Dict
 
 from flask import Flask, render_template, Response, request
 
-from bd.email_template import EmailTemplate
 from bd.runner import schedule_every_minute, eval_template
-from util.dao import get_db, construct_obj, construct_id
+from util.dao import construct_obj, construct_id, DB
 from util.data_src.file_data_src import FileDataSrc
 from util.hack import my_eval
 from util.system import setup_log, get_config, exception_as_str
 from util.web import get_form_value, home
 
-FLASK = Flask(__name__)
-PORT = 8080
 LOG = setup_log(f"{datetime.datetime.today().strftime('%Y%m%d')}.log")
 CONFIG = FileDataSrc("config.py")
-DB = get_db()
+
+FLASK = Flask(__name__)
+PORT = 8080
 
 
 @FLASK.route("/", methods=["POST", "GET"])
@@ -68,9 +66,9 @@ def access_email_template():
 
     if get_form_value("action") == "Also Instantiate":
         try:
-            config_args: Dict = get_config()
-            template: EmailTemplate = my_eval(modified_template)
-            is_success, subject, body = eval_template(template, config_args)
+            is_success, subject, body = eval_template(
+                my_eval(modified_template), get_config()
+            )
             return render_template(
                 "instantiate.html",
                 time=modified_time,

@@ -1,4 +1,7 @@
 import _thread as thread
+from importlib import reload
+
+import config
 import logging
 import os
 import sys
@@ -59,16 +62,16 @@ def exception_as_str(exception: Exception) -> str:
 def setup_log(log_file: str) -> DataSrc:
     LOG_DIR = "log"
     log_path = os.path.join(LOG_DIR, log_file)
+    src = FileDataSrc(log_path)
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)-10s %(message)s",
         datefmt="%Y/%m/%d %H:%M:%S",
         handlers=[logging.FileHandler(log_path), logging.StreamHandler()],
     )
-    return FileDataSrc(log_path)
+    return src
 
 
 def get_config() -> Dict:
-    import config
-
+    config = reload(config)
     return dict(filter(lambda p: not p[0].startswith("__"), vars(config).items()))

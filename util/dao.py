@@ -2,11 +2,8 @@ from typing import Dict
 
 from bson import ObjectId
 from pymongo import MongoClient
-from pymongo.collection import Collection
 
-
-def get_db() -> Collection:
-    return MongoClient()["db"]["client"]
+DB = MongoClient()["db"]["client"]
 
 
 def construct_id(_id: str) -> Dict:

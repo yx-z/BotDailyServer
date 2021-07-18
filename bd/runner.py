@@ -7,7 +7,7 @@ import time
 import schedule
 
 from bd.email_template import EmailTemplate, InstantiatedEmail
-from util.dao import get_db
+from util.dao import DB
 from util.hack import my_eval
 from util.system import threaded, exception_as_str, get_config
 from util.mail import Sender
@@ -52,7 +52,7 @@ def scheduled_run(curr_time: Optional[datetime.datetime] = None):
 
     for obj_run_now in filter(
         lambda obj: curr_time.strftime("%H:%M") == obj["time"],
-        get_db().find(),
+        DB.find(),
     ):
         try:
             logging.info(f"Evaluating {obj_run_now['_id']}")
