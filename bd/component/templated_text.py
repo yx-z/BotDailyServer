@@ -1,6 +1,6 @@
 from typing import Union
 
-from bd.component.component import BDComponent
+from bd.component import BDComponent
 from util.data_src.data_src import DataSrc
 
 
@@ -18,5 +18,5 @@ class TemplatedText(BDComponent):
 
 
 class Subject(TemplatedText):
-    def get_div_str(self, **kwargs) -> str:
+    def get_str(self, **kwargs) -> str:
         return self.get_content(**kwargs)

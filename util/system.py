@@ -1,7 +1,7 @@
 import _thread as thread
+import datetime
 from importlib import reload
 
-import config
 import logging
 import os
 import sys
@@ -73,5 +73,11 @@ def setup_log(log_file: str) -> DataSrc:
 
 
 def get_config() -> Dict:
+    import config
+
     config = reload(config)
     return dict(filter(lambda p: not p[0].startswith("__"), vars(config).items()))
+
+
+def get_days(dt: datetime.datetime) -> int:
+    return (datetime.datetime.today() - dt).days

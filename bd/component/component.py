@@ -20,7 +20,7 @@ class BDComponent:
     def get_content(self, **kwargs) -> str:
         pass
 
-    def get_div_str(self, **kwargs) -> str:
+    def get_str(self, **kwargs) -> str:
         return str(DIV[self.get_content(**kwargs)])
 
     def on_email_sent(self):
@@ -37,7 +37,7 @@ def div_style(**style_args):
                 DIV(style=dict_to_css(**style_args))[cls.get_content(self, **kwargs)]
             )
 
-        cls.get_div_str = get_str
+        cls.get_str = get_str
         return cls
 
     return wrapper
@@ -74,12 +74,12 @@ def title(
         )
 
     def wrapper(cls):
-        pre_get_str = cls.get_div_str
+        pre_get_str = cls.get_str
 
         def get_str(self, **kwargs):
             return get_title_image(self) + pre_get_str(self, **kwargs)
 
-        cls.get_div_str = get_str
+        cls.get_str = get_str
         return cls
 
     return wrapper

@@ -2,7 +2,7 @@ import logging
 import time
 from typing import List, Tuple, Optional, Set, Union
 
-from bd.component.component import BDComponent
+from bd.component import BDComponent
 from bd.component.templated_text import Subject
 from util.system import interrupt_after, exception_as_str
 
@@ -41,7 +41,7 @@ class EmailTemplate:
             for component in [self.subject] + self.components:
                 logging.info(f"Instantiating {component.get_name()}")
                 try:
-                    components.append(component.get_div_str(**arg_dict))
+                    components.append(component.get_str(**arg_dict))
                 except Exception as e:
                     is_success = False
                     is_subject_success = component == self.subject
