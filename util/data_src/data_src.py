@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class DataSource:
+class DataSrc:
     @abstractmethod
     def get_str(self) -> str:
         pass

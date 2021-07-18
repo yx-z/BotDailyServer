@@ -1,56 +1,51 @@
-from bd.component import *
 import datetime
 import logging
-import os
+from typing import Dict
 
 from flask import Flask, render_template, Response, request
 
 from bd.email_template import EmailTemplate
-from bd.runner import schedule_every_minute
+from bd.runner import schedule_every_minute, eval_template
 from util.dao import get_db, construct_obj, construct_id
-from util.system import (
-    setup_log,
-    get_log,
-    set_config,
-    get_config_str,
-    get_config,
-    exception_as_str,
-)
-from util.web import get_form_value, home, HTML_NEW_LINE
+from util.data_src.file_data_src import FileDataSrc
+from util.hack import my_eval
+from util.system import setup_log, get_config, exception_as_str
+from util.web import get_form_value, home
 
 FLASK = Flask(__name__)
 PORT = 8080
-LOG_FILE = os.path.join("log",
-                        f"{datetime.datetime.today().strftime('%Y%m%d')}.log")
+LOG = setup_log(f"{datetime.datetime.today().strftime('%Y%m%d')}.log")
+CONFIG = FileDataSrc("config.py")
 DB = get_db()
 
 
 @FLASK.route("/", methods=["POST", "GET"])
 def home_page() -> str:
-    log = get_log(LOG_FILE)
+    log_lines = LOG.get_str().split("\n")
     if "reverse" in request.form:
-        log = reversed(log)
+        log_lines = reversed(log_lines)
     return render_template(
         "index.html",
         templates=DB.find(),
-        log=HTML_NEW_LINE.join(log),
-        config=get_config_str(),
+        log="<br>".join(log_lines),
+        config=CONFIG.get_str(),
     )
 
 
 @FLASK.route("/modify_config", methods=["POST"])
 def modify_config() -> Response:
-    set_config(get_form_value("config"))
+    CONFIG.set_str(get_form_value("config"))
     logging.info("Updated config")
     return home()
 
 
 @FLASK.route("/operate_email_template", methods=["POST"])
 def operate_email_template() -> Response:
-    if get_form_value("action") == "Clear All":
+    action = get_form_value("action")
+    if action == "Clear All":
         DB.delete_many({})
         logging.warning("Deleted all records")
-    else:
+    elif action == "Add":
         time, template = get_form_value(["time", "email_template"])
         _id = DB.insert_one(construct_obj(time, template)).inserted_id
         logging.info(f"Inserted {_id}")
@@ -58,30 +53,24 @@ def operate_email_template() -> Response:
 
 
 @FLASK.route("/access_email_template", methods=["POST"])
-def access_email_template() -> Response:
+def access_email_template():
     _id, modified_time, modified_template = get_form_value(
         ["_id", "time", "email_template"]
     )
     if len(modified_time) == 0 or len(modified_template) == 0:
-        delete_result = DB.delete_one(construct_id(_id))
-        if delete_result.deleted_count > 0:
-            logging.info(f"Deleted {_id}")
+        DB.delete_one(construct_id(_id))
+        logging.info(f"Deleted {_id}")
     else:
-        update_result = DB.replace_one(
+        DB.replace_one(
             construct_id(_id), construct_obj(modified_time, modified_template)
         )
-        if update_result.modified_count > 0:
-            logging.info(f"Updated {_id}")
+        logging.info(f"Updated {_id}")
 
     if get_form_value("action") == "Also Instantiate":
         try:
-            config_args = get_config()
-            template: EmailTemplate = eval(modified_template)
-            template.sender = config_args["SENDER"]
-            is_success, subject, body = template.instantiate(
-                num_retry=0, retry_delay_seconds=0, timeout_seconds=60,
-                **config_args
-            )
+            config_args: Dict = get_config()
+            template: EmailTemplate = my_eval(modified_template)
+            is_success, subject, body = eval_template(template, config_args)
             return render_template(
                 "instantiate.html",
                 time=modified_time,
@@ -98,6 +87,5 @@ def access_email_template() -> Response:
 
 
 if __name__ == "__main__":
-    setup_log(LOG_FILE)
     schedule_every_minute()
     FLASK.run(host="localhost", port=PORT)

@@ -1,15 +1,15 @@
 from typing import Union
 
-from bd.component.base_component import BaseComponent
-from bd.data_src.base_data_source import DataSource
+from bd.component.component import BDComponent
+from util.data_src.data_src import DataSrc
 
 
-class TemplatedText(BaseComponent):
-    def __init__(self, template: Union[DataSource, str]):
+class TemplatedText(BDComponent):
+    def __init__(self, template: Union[DataSrc, str]):
         self.template = template
 
     def get_content(self, **kwargs) -> str:
-        if isinstance(self.template, DataSource):
+        if isinstance(self.template, DataSrc):
             content = self.template.get_str()
         else:
             content = self.template

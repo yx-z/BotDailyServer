@@ -2,25 +2,23 @@ import logging
 import time
 from typing import List, Tuple, Optional, Set, Union
 
-from bd.component.base_component import BaseComponent
+from bd.component.component import BDComponent
 from bd.component.templated_text import Subject
-from util.mail import Sender
 from util.system import interrupt_after, exception_as_str
-from util.web import HTML_NEW_LINE
+
+InstantiatedEmail = Tuple[bool, str, str]
 
 
 class EmailTemplate:
     def __init__(
         self,
         subject: Optional[Subject] = None,
-        components: Optional[List[BaseComponent]] = None,
+        components: Optional[List[BDComponent]] = None,
         recipient_emails: Optional[Union[Set[str], str]] = None,
-        sender: Optional[Sender] = None,
     ):
         self.subject = subject
-        self.sender = sender
-        self.recipient_emails = recipient_emails
         self.components = components
+        self.recipient_emails = recipient_emails
 
     def instantiate(
         self,
@@ -29,13 +27,12 @@ class EmailTemplate:
         retry_delay_seconds,
         timeout_seconds,
         **kwargs,
-    ) -> Tuple[bool, str, str]:
-        attrs = list(filter(lambda s: not s.startswith("__"), dir(self)))
-        if any(a is None for a in attrs):
-            raise Exception(f"Require not None {attrs}")
+    ) -> InstantiatedEmail:
+        if any(a is None for a in [self.subject, self.components]):
+            raise Exception(f"Require not None subject and components")
 
         @interrupt_after(timeout_seconds)
-        def _instantiate() -> Tuple[bool, str, List[str]]:
+        def _instantiate() -> InstantiatedEmail:
             arg_dict = {"email_template": self}
             arg_dict.update(kwargs)
             components = []
@@ -53,7 +50,7 @@ class EmailTemplate:
             subject = (
                 components[0] if is_subject_success else "Error instantiating subject"
             )
-            return is_success, subject, HTML_NEW_LINE.join(components[1:])
+            return is_success, subject, "<br>".join(components[1:])
 
         try:
             return _instantiate()
@@ -64,7 +61,7 @@ class EmailTemplate:
                     f"Will do {num_retry} retries after {timeout_seconds} seconds"
                 )
                 time.sleep(retry_delay_seconds)
-                self.instantiate(
+                return self.instantiate(
                     num_retry=num_retry,
                     timeout_seconds=timeout_seconds,
                     retry_delay_seconds=retry_delay_seconds,

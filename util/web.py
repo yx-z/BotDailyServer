@@ -4,8 +4,6 @@ from flask import request, Response, redirect
 
 CSS_FULL_WIDTH = {"width": "100%"}
 
-HTML_NEW_LINE = "<br>"
-
 
 def get_form_value(value_names: Union[str, List[str]]) -> Union[Any, List[Any]]:
     if isinstance(value_names, str):

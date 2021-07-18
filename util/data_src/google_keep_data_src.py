@@ -1,10 +1,10 @@
 import gkeepapi
 from gkeepapi.node import TopLevelNode
 
-from bd.data_src.base_data_source import DataSource
+from util.data_src.data_src import DataSrc
 
 
-class GoogleKeepBased(DataSource):
+class GoogleKeepDataSrc(DataSrc):
     def __init__(self, account: str, password: str, title: str):
         self._keep = gkeepapi.Keep()
         self.account = account

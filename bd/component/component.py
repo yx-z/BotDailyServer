@@ -15,7 +15,7 @@ from util.system import resource_exists
 from util.web import CSS_FULL_WIDTH, dict_to_css
 
 
-class BaseComponent:
+class BDComponent:
     @abstractmethod
     def get_content(self, **kwargs) -> str:
         pass
