@@ -1,6 +1,6 @@
 # Custom
 log/
-config.py
+cfg.py
 .idea/
 **/.DS_Store
 

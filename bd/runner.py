@@ -9,7 +9,8 @@ from bd.email_template import EmailTemplate
 from util.dao import DB
 from util.hack import my_eval
 from util.mail import Sender
-from util.system import threaded, exception_as_str, get_config
+from util.system import threaded, exception_as_str
+from util.res_log_cfg import get_cfg
 
 
 @threaded
@@ -26,12 +27,14 @@ def send_email(template_str: str):
     if template.recipient_emails is None:
         raise Exception("template doesn't specify recipient_emails")
 
-    config_args: Dict = get_config()
+    config_args: Dict = get_cfg()
     sender: Sender = config_args["SENDER"]
 
     is_success, subject, body = template.instantiate(**config_args)
     if is_success:
         sender.send(template.recipient_emails, subject, body)
+        for component in [template.subject] + template.components:
+            component.on_email_sent()
     else:
         sender.send(sender.email_address, subject, body)
 

@@ -15,7 +15,7 @@ def get_form_value(value_names: Union[str, List[str]]) -> Union[Any, List[Any]]:
         return results
 
 
-def dict_to_css(**kwargs) -> str:
+def to_css(**kwargs) -> str:
     return ";".join(map(lambda p: f"{p[0]}:{p[1]}", kwargs.items()))
 
 

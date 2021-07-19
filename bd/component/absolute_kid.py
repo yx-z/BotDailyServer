@@ -5,7 +5,7 @@ from html_dsl.elements import IMG
 from bd.component import BDComponent, title
 from util.img import upload_img
 from util.system import get_days
-from util.web import dict_to_css, CSS_FULL_WIDTH
+from util.web import to_css, CSS_FULL_WIDTH
 
 
 @title("绝对小孩")
@@ -15,9 +15,7 @@ class AbsoluteKid(BDComponent):
         indices = [days * 2 - 1, days * 2]
         logging.info(f"Querying indices {indices}")
         urls = list(
-            map(lambda i: upload_img("absolute_kid", f"00{i}"[-3:] + ".jpg"),
-                indices)
+            map(lambda i: upload_img("absolute_kid", f"00{i}"[-3:] + ".jpg"), indices)
         )
-        style = dict_to_css(**CSS_FULL_WIDTH)
-        return str(IMG(src=urls[0], style=style)) + str(
-            IMG(src=urls[1], style=style))
+        style = to_css(**CSS_FULL_WIDTH)
+        return str(IMG(src=urls[0], style=style)) + str(IMG(src=urls[1], style=style))

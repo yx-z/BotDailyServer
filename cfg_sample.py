@@ -1,4 +1,4 @@
-# rename to config.py with real configs
+# rename to cfg.py with real configs
 
 SENDER = {
     "email": "abc@gmail.com",

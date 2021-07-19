@@ -11,20 +11,17 @@ from util.img import (
     Color,
     Coordinate,
 )
-from util.system import res_exists
-from util.web import CSS_FULL_WIDTH, dict_to_css
+from util.res_log_cfg import res_exists
+from util.web import CSS_FULL_WIDTH, to_css
 
 
 class BDComponent(ABC):
     def __init__(self, *args, **kwargs):
-        self.defined_args = {}
         for i, v in enumerate(args):
             arg_name = f"arg{i}"
             setattr(self, arg_name, v)
-            self.defined_args[arg_name] = v
         for k, v in kwargs.items():
             setattr(self, k, v)
-            self.defined_args[k] = v
 
     @abstractmethod
     def get_content(self, **kwargs) -> str:
@@ -39,12 +36,9 @@ class BDComponent(ABC):
 
     @classmethod
     def set_getter(cls, **kwargs):
-        def getter(self, attr):
-            if attr in self.defined_args:
-                return self.defined_args[attr]
+        def getter(_, attr):
             if attr in kwargs:
                 v = kwargs[attr]
-                setattr(self, attr, v)
                 return v
             raise AttributeError(f"{cls.get_name()} requires {attr}")
 
@@ -58,9 +52,7 @@ class BDComponent(ABC):
 def div_style(**style_args):
     def wrapper(cls):
         def get_str(self, **kwargs):
-            return str(
-                DIV(style=dict_to_css(**style_args))[cls.get_content(self, **kwargs)]
-            )
+            return str(DIV(style=to_css(**style_args))[cls.get_content(self, **kwargs)])
 
         cls.get_str = get_str
         return cls
@@ -94,9 +86,7 @@ def title(
             save_img(title_image, header_file)
 
         img_src = upload_img(header_file)
-        return str(
-            IMG(src=img_src, alt=header_file, style=dict_to_css(**CSS_FULL_WIDTH))
-        )
+        return str(IMG(src=img_src, alt=header_file, style=to_css(**CSS_FULL_WIDTH)))
 
     def wrapper(cls):
         pre_get_str = cls.get_str

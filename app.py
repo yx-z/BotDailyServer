@@ -8,11 +8,12 @@ from bd.runner import schedule_every_minute
 from util.dao import construct_obj, construct_id, DB
 from util.data_src.file_data_src import FileDataSrc
 from util.hack import my_eval
-from util.system import setup_log, get_config, exception_as_str
+from util.system import exception_as_str
+from util.res_log_cfg import setup_log, get_cfg
 from util.web import get_form_value, home
 
 LOG = setup_log(f"{datetime.datetime.today().strftime('%Y%m%d')}.log")
-CONFIG = FileDataSrc("config.py")
+CONFIG = FileDataSrc("cfg.py")
 
 FLASK = Flask(__name__)
 PORT = 8080
@@ -68,7 +69,7 @@ def access_email_template():
     if get_form_value("action") == "Also Instantiate":
         try:
             template: EmailTemplate = my_eval(modified_template)
-            is_success, subject, body = template.instantiate(**get_config())
+            is_success, subject, body = template.instantiate(**get_cfg())
             return render_template(
                 "instantiate.html",
                 time=modified_time,

@@ -4,7 +4,7 @@ from typing import Tuple
 from PIL import Image
 from PIL import ImageDraw, ImageFilter, ImageChops, ImageFont
 
-from util.system import get_res
+from util.res_log_cfg import get_res, get_cfg
 
 Color = Tuple[int, int, int]
 Coordinate = Tuple[int, int]
@@ -39,10 +39,9 @@ def save_img(img: Image, *path: str):
 
 
 def upload_img(*path: str) -> str:
-    import config
 
     res = get_res(*path)
     logging.info(f"Uploading {res}")
-    url = config.IMGUR_API.upload_image(res).link
+    url = get_cfg()["IMGUR_API"].upload_image(res).link
     logging.info(f"Uploaded as {url}")
     return url

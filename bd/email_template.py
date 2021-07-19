@@ -50,8 +50,7 @@ class EmailTemplate:
                         if component == self.subject:
                             is_subject_success = False
                         logging.error(e)
-                        components.append(
-                            exception_as_str(e).replace("\n", "<br>"))
+                        components.append(exception_as_str(e).replace("\n", "<br>"))
                     else:
                         raise e
             subject = (
