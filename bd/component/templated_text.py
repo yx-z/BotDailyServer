@@ -1,18 +1,18 @@
-from typing import Union
-
 from bd.component import BDComponent
 from util.data_src.data_src import DataSrc
 
 
 class TemplatedText(BDComponent):
-    def __init__(self, template: Union[DataSrc, str]):
-        self.template = template
-
     def get_content(self, **kwargs) -> str:
-        if isinstance(self.template, DataSrc):
-            content = self.template.get_str()
+        if hasattr(self, "template"):
+            template = self.template
         else:
-            content = self.template
+            template = self.arg0
+
+        if isinstance(template, DataSrc):
+            content = template.get_str()
+        else:
+            content = template
 
         return content.format(**kwargs)
 

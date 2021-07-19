@@ -23,9 +23,9 @@ class EmailTemplate:
     def instantiate(
         self,
         *,
-        num_retry,
-        retry_delay_seconds,
-        timeout_seconds,
+        num_retry: int = 0,
+        retry_delay_seconds: int = 0,
+        timeout_seconds: int = 60,
         **kwargs,
     ) -> InstantiatedEmail:
         if any(a is None for a in [self.subject, self.components]):

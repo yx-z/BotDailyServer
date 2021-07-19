@@ -3,7 +3,8 @@ import logging
 
 from flask import Flask, render_template, Response, request
 
-from bd.runner import schedule_every_minute, eval_template
+from bd import EmailTemplate
+from bd.runner import schedule_every_minute
 from util.dao import construct_obj, construct_id, DB
 from util.data_src.file_data_src import FileDataSrc
 from util.hack import my_eval
@@ -66,9 +67,8 @@ def access_email_template():
 
     if get_form_value("action") == "Also Instantiate":
         try:
-            is_success, subject, body = eval_template(
-                my_eval(modified_template), get_config()
-            )
+            template: EmailTemplate = my_eval(modified_template)
+            is_success, subject, body = template.instantiate(**get_config())
             return render_template(
                 "instantiate.html",
                 time=modified_time,

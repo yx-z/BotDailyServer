@@ -1,10 +1,10 @@
-import datetime
 import logging
 
 from html_dsl.elements import IMG
 
 from bd.component import BDComponent, title
-from util.system import get_days
+from util.img import upload_img
+from util.system import get_days, get_res
 from util.web import dict_to_css, CSS_FULL_WIDTH
 
 
@@ -12,14 +12,11 @@ from util.web import dict_to_css, CSS_FULL_WIDTH
 class AbsoluteKid(BDComponent):
     URL = "https://raw.githubusercontent.com/yx-z/YunDaily/master/Yun/res/absolute-kids/{i}.jpg"
 
-    def __init__(self, start_date: datetime.datetime):
-        self.start_date = start_date
-
     def get_content(self, **kwargs) -> str:
         days = get_days(self.start_date) + 1
         urls = list(
             map(
-                lambda i: AbsoluteKid.URL.format(i=f"00{i}"[-3:]),
+                lambda i: upload_img(get_res(f"00{i}"[-3:])),
                 [days * 2 - 1, days * 2],
             )
         )

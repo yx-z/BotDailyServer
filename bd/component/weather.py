@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import requests
 from html_dsl.elements import EM
@@ -9,34 +8,37 @@ from bd.component import BDComponent, title
 
 @title("天气")
 class Weather(BDComponent):
-    def __init__(
-        self, latitude: float, longitude: float, location: Optional[str] = None
-    ):
-        self.url = (
-            "https://api.darksky.net/forecast/{key}/"
-            + f"{latitude},{longitude}?lang=zh&units=si"
-        )
-        self.location = location
+    URL = (
+        "https://api.darksky.net/forecast/{key}/{latitude},{longitude}?lang=zh&units=si"
+    )
 
     def get_content(self, **kwargs) -> str:
-        if "DARKSKY_KEY" not in kwargs:
-            raise Exception("Require DARKSKY_KEY")
-        logging.info(f"Querying {self.url}")
-        data = requests.get(self.url.format(key=kwargs["DARKSKY_KEY"])).json()
+        super().get_content()
+        url = Weather.URL.format(
+            key=self.DARKSKY_KEY, latitude=self.latitude, longitude=self.longitude
+        )
+        logging.info(f"Quering {url}")
+        data = requests.get(url).json()
         weather = data["daily"]["data"][0]
 
         summary = weather["summary"]
         if any(w in summary for w in ["雨", "雪"]):
             summary = EM[summary]
 
-        min_temperature = int(weather["temperatureLow"])
-        min_temperature_text = f"最低 {min_temperature}°C"
-        if min_temperature <= 0:
-            min_temperature_text = EM[min_temperature_text]
+        temperature_low = int(weather["temperatureLow"])
+        temperature_low_text = f"最低 {temperature_low}°C"
+        if (
+            hasattr(self, "warn_temperature_low")
+            and temperature_low <= self.warn_temperature_low
+        ):
+            temperature_low_text = EM[temperature_low_text]
 
-        max_temperature = int(weather["temperatureHigh"])
-        max_temperature_text = f"最高 {max_temperature}°C"
-        if max_temperature >= 35:
-            max_temperature_text = EM[min_temperature_text]
+        temperature_high = int(weather["temperatureHigh"])
+        temperature_high_text = f"最高 {temperature_high}°C"
+        if (
+            hasattr(self, "warn_temperature_high")
+            and temperature_high >= self.warn_temperature_high
+        ):
+            temperature_high_text = EM[temperature_low_text]
 
-        return f"{self.location} - {summary} {max_temperature_text}, {min_temperature_text}。"
+        return f"{self.location} - {summary} {temperature_high_text}, {temperature_low_text}。"

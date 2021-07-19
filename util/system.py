@@ -13,14 +13,15 @@ from util.data_src.data_src import DataSrc
 from util.data_src.file_data_src import FileDataSrc
 
 
-def get_resource_path(*sub_path_to_file: str) -> str:
-    path = os.path.join("res", *sub_path_to_file)
+def get_res(*sub_path_to_file: str) -> str:
+    RES_DIR = "res"
+    path = os.path.join(RES_DIR, *sub_path_to_file)
     logging.debug(f"Opening resource {path}")
     return path
 
 
-def resource_exists(*sub_path_to_file: str) -> bool:
-    return os.path.exists(get_resource_path(*sub_path_to_file))
+def res_exists(*sub_path_to_file: str) -> bool:
+    return os.path.exists(get_res(*sub_path_to_file))
 
 
 def threaded(job_func: Callable):
