@@ -31,10 +31,11 @@ class EmailTemplate:
         if any(a is None for a in [self.subject, self.components]):
             raise Exception(f"Require not None subject and components")
 
+        arg_dict = {"email_template": self}
+        arg_dict.update(kwargs)
+
         @interrupt_after(timeout_seconds)
         def _instantiate() -> InstantiatedEmail:
-            arg_dict = {"email_template": self}
-            arg_dict.update(kwargs)
             components = []
             is_subject_success = True
             is_success = True
@@ -42,11 +43,17 @@ class EmailTemplate:
                 logging.info(f"Instantiating {component.get_name()}")
                 try:
                     components.append(component.get_str(**arg_dict))
+                    logging.info(f"Instantiated {component.get_name()}")
                 except Exception as e:
-                    is_success = False
-                    is_subject_success = component == self.subject
-                    logging.error(e)
-                    components.append(exception_as_str(e))
+                    if num_retry == 0:
+                        is_success = False
+                        if component == self.subject:
+                            is_subject_success = False
+                        logging.error(e)
+                        components.append(
+                            exception_as_str(e).replace("\n", "<br>"))
+                    else:
+                        raise e
             subject = (
                 components[0] if is_subject_success else "Error instantiating subject"
             )

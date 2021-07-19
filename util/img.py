@@ -43,6 +43,6 @@ def upload_img(*path: str) -> str:
 
     res = get_res(*path)
     logging.info(f"Uploading {res}")
-    url = config.IMGUR_API.upload_img(res).link
+    url = config.IMGUR_API.upload_image(res).link
     logging.info(f"Uploaded as {url}")
     return url

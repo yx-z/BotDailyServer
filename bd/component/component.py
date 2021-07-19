@@ -17,10 +17,14 @@ from util.web import CSS_FULL_WIDTH, dict_to_css
 
 class BDComponent(ABC):
     def __init__(self, *args, **kwargs):
+        self.defined_args = {}
         for i, v in enumerate(args):
-            setattr(self, f"arg{i}", v)
+            arg_name = f"arg{i}"
+            setattr(self, arg_name, v)
+            self.defined_args[arg_name] = v
         for k, v in kwargs.items():
             setattr(self, k, v)
+            self.defined_args[k] = v
 
     @abstractmethod
     def get_content(self, **kwargs) -> str:
@@ -36,6 +40,8 @@ class BDComponent(ABC):
     @classmethod
     def set_getter(cls, **kwargs):
         def getter(self, attr):
+            if attr in self.defined_args:
+                return self.defined_args[attr]
             if attr in kwargs:
                 v = kwargs[attr]
                 setattr(self, attr, v)

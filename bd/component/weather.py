@@ -13,7 +13,6 @@ class Weather(BDComponent):
     )
 
     def get_content(self, **kwargs) -> str:
-        super().get_content()
         url = Weather.URL.format(
             key=self.DARKSKY_KEY, latitude=self.latitude, longitude=self.longitude
         )
